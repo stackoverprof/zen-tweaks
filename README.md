@@ -13,7 +13,8 @@ For the **Sidebar and Top Toolbar** layout (Settings > Look and Feel):
 - **Address as plain text:** just the domain (`youtube.com`), centred in the window, with no box and no icons. Cmd+L or typing still opens Zen's search.
 - **Page-coloured toolbar:** the toolbar sits inside the page card and takes the page's own top colour, with dark or light icons to match, like Arc. A hairline separates it from the page.
 - **Quieter toolbar:** no traffic lights or search placeholder in the toolbar; the page-load indicator sits next to the menu button.
-- **Compact mode:** the floating sidebar runs the full height of the window, with the traffic lights in its top-left above the essentials.
+- **Compact mode:** the floating sidebar runs the full height of the window, slightly see-through (90%), with the traffic lights in its top-left above the essentials.
+- **Empty tabs:** with no page open, the toolbar takes the same grey as Zen's empty page.
 
 <img src="images/compact-sidebar.png" width="480" alt="Compact sidebar with traffic lights">
 

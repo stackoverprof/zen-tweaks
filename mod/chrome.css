@@ -264,3 +264,29 @@
     max-height: none !important;
   }
 }
+
+/* Compact mode: the floating sidebar's background at 90% opacity (no blur) */
+:root[zen-compact-mode="true"] #navigator-toolbox:not([animate="true"]) #titlebar .zen-toolbar-background {
+  background-color: light-dark(rgba(233, 233, 233, 0.9), rgba(19, 19, 19, 0.9)) !important;
+  background-image: none !important;
+
+  &::before,
+  &::after {
+    opacity: 0 !important;  /* Zen's solid gradient layers */
+  }
+}
+
+/* while the sidebar is out, hide the toolbar buttons under its top corner so they don't show through */
+:root[zen-compact-mode="true"]:not([zen-single-toolbar="true"]):has(#navigator-toolbox:is([zen-has-hover], [zen-user-show], [flash-popup], [has-popup-menu], [zen-compact-mode-active], [movingtab])) #nav-bar :is(#zen-sidebar-top-buttons, #back-button, #forward-button, #stop-reload-button) {
+  visibility: hidden !important;
+}
+
+/* Empty tab (fresh window / new tab): no page colour to take, so let the window's own grey show */
+:root[zen-has-empty-tab="true"] {
+  --zen-page-top-color: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1)) !important;  /* same wash Zen puts on the empty page */
+  --zen-page-top-fg: light-dark(rgb(28, 28, 30), rgb(235, 235, 240)) !important;
+
+  & #zen-appcontent-navbar-wrapper {
+    box-shadow: none !important;
+  }
+}
