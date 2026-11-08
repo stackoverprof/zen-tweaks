@@ -1,0 +1,266 @@
+/*
+ * Zen Tweaks (mod)
+ * For the "Sidebar and Top Toolbar" layout on macOS:
+ *  - top toolbar at 70% height, address shown as plain centred text (no box, no icons)
+ *  - no traffic lights or search box in the toolbar; Cmd+L / typing still opens Zen's search
+ *  - toolbar drawn inside the page card, painted with the page's colour (needs the startup script)
+ *  - compact mode: the floating sidebar runs the full window height; traffic lights in its
+ *    top-left (moved there by the startup script)
+ *  - page-load indicator next to the menu button
+ */
+
+:root:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper {
+  --zen-half-toolbar-h: calc(var(--zen-toolbar-height) * 0.7);
+
+  min-height: var(--zen-half-toolbar-h) !important;
+  height: auto !important;
+
+  & #zen-appcontent-navbar-container {
+    min-height: var(--zen-half-toolbar-h) !important;
+  }
+
+  & #nav-bar {
+    min-height: var(--zen-half-toolbar-h) !important;
+    height: var(--zen-half-toolbar-h) !important;
+    padding-block: 0 !important;
+    align-items: center !important;
+  }
+
+  & #nav-bar-customization-target {
+    align-items: center !important;
+  }
+
+  /* buttons: 16px icon + 4px padding = 24px */
+  & #nav-bar .toolbarbutton-1 {
+    --toolbarbutton-inner-padding: 4px !important;
+    --toolbarbutton-outer-padding: 2px !important;
+    padding-block: 0 !important;
+
+    & > .toolbarbutton-icon,
+    & > .toolbarbutton-badge-stack {
+      padding: 4px !important;
+      width: 24px !important;
+      height: 24px !important;
+      min-height: 0 !important;
+    }
+  }
+
+  /* address bar */
+  & #urlbar-container {
+    --urlbar-container-height: var(--zen-half-toolbar-h) !important;
+    min-height: 0 !important;
+    height: var(--zen-half-toolbar-h) !important;
+    padding-block: 0 !important;
+    max-height: none !important;
+    background: transparent !important;
+  }
+
+  /* centre the address on the whole window, not just the space between the buttons */
+  &:not([customizing]) #urlbar-container {
+    position: fixed !important;
+    top: 0 !important;
+    left: 50vw !important;
+    transform: translateX(-50%) !important;
+    width: 420px !important;
+    min-width: 0 !important;
+    max-width: 60vw !important;
+    margin: 0 !important;
+    z-index: 1 !important;
+  }
+
+  & #urlbar:not([breakout-extend]) {
+    --urlbar-height: var(--zen-half-toolbar-h) !important;
+    --urlbar-toolbar-height: var(--zen-half-toolbar-h) !important;
+    --urlbar-min-height: var(--zen-half-toolbar-h) !important;
+    min-height: var(--zen-half-toolbar-h) !important;
+    height: var(--zen-half-toolbar-h) !important;
+    top: 0 !important;
+    margin-block: 0 !important;
+    font-size: 13px !important;
+
+    /* no fill: the address bar blends into the toolbar */
+    & .urlbar-background,
+    &:hover .urlbar-background {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    & .urlbar-input-container {
+      padding-block: 0 !important;
+      height: 100% !important;
+    }
+
+    & :is(#identity-icon-box, #identity-permission-box, .urlbar-page-action, #tracking-protection-icon-container, #zen-copy-url-button) {
+      padding-block: 1px !important;
+      height: auto !important;
+    }
+  }
+
+  /* no traffic lights in the toolbar (compact mode moves them here) */
+  & #nav-bar .titlebar-buttonbox-container {
+    display: none !important;
+  }
+
+  /* address shown as plain, non-interactive text, cut short with "…" */
+  & #urlbar-container:not(:has(#urlbar[breakout-extend])) {
+    pointer-events: none !important;
+    user-select: none !important;
+  }
+
+  & #urlbar:not([breakout-extend]) {
+    cursor: default !important;
+
+    & .urlbar-input::selection {
+      background: transparent !important;
+      color: inherit !important;
+    }
+
+    & .urlbar-input {
+      caret-color: transparent !important;
+    }
+  }
+
+  & #urlbar:not([breakout-extend]) {
+    & .urlbar-input-container {
+      justify-content: center !important;
+    }
+
+    & #identity-box,
+    & #tracking-protection-icon-container,
+    & #page-action-buttons,
+    & .urlbar-page-action,
+    & #zen-copy-url-button,
+    & #notification-popup-box,
+    & #remote-control-box,
+    & .urlbar-go-button {
+      display: none !important;
+    }
+
+    & .urlbar-input-box {
+      flex: 0 1 auto !important;
+      min-width: 0 !important;
+    }
+
+    & #urlbar-input,
+    & .urlbar-input {
+      field-sizing: content;
+      max-width: 260px !important;
+      min-width: 2ch !important;
+      text-align: center !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+      opacity: 0.75;
+      /* sit on the toolbar's optical centre, level with the buttons */
+      height: var(--zen-half-toolbar-h) !important;
+      line-height: var(--zen-half-toolbar-h) !important;
+      transform: translateY(-0.5px) !important;
+    }
+  }
+}
+
+/* Compact mode: the floating sidebar runs the full height of the window, over the toolbar (like Arc) */
+:root[zen-compact-mode="true"]:not([zen-single-toolbar="true"]) #navigator-toolbox:not([animate="true"]) {
+  margin-top: 0 !important;
+  top: calc(var(--zen-compact-float) / 2) !important;
+  bottom: calc(var(--zen-compact-float) / 2) !important;
+  height: auto !important;
+  z-index: 20 !important;
+}
+
+/* Page-coloured toolbar (needs the startup script, which sets [zen-page-color]):
+ * the bar sits inside the window frame as the top of the page card, painted with
+ * the page's own top colour, like Arc. */
+:root[zen-page-color]:not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]) {
+  --zen-page-card-radius: 7px;
+
+  & #zen-appcontent-navbar-wrapper {
+    margin: var(--zen-element-separation) var(--zen-element-separation) 0 0 !important;
+    background: var(--zen-page-top-color) !important;
+    border-radius: var(--zen-page-card-radius) var(--zen-page-card-radius) 0 0 !important;
+    overflow: clip !important;
+    /* thin hairline between the bar and the page, like Arc */
+    box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--zen-page-top-fg) 10%, transparent) !important;
+    transition: background-color 0.2s ease;
+  }
+
+  &[zen-compact-mode="true"] #zen-appcontent-navbar-wrapper {
+    margin-left: var(--zen-element-separation) !important;
+  }
+
+  & #tabbrowser-tabbox,
+  & #zen-tabbox-wrapper {
+    margin-top: 0 !important;
+  }
+
+  & .browserSidebarContainer.deck-selected:not([zen-split="true"]),
+  & .browserSidebarContainer.deck-selected:not([zen-split="true"]) :is(.browserContainer, .browserStack, browser) {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+  }
+
+  & #nav-bar,
+  & #nav-bar :is(.toolbarbutton-1, #zen-sidebar-top-buttons) {
+    color: var(--zen-page-top-fg) !important;
+    fill: var(--zen-page-top-fg) !important;
+    --toolbarbutton-icon-fill: var(--zen-page-top-fg) !important;
+    --toolbar-color: var(--zen-page-top-fg) !important;
+    --toolbarbutton-hover-background: color-mix(in srgb, var(--zen-page-top-fg) 12%, transparent) !important;
+    --toolbarbutton-active-background: color-mix(in srgb, var(--zen-page-top-fg) 18%, transparent) !important;
+  }
+
+  & #zen-appcontent-navbar-wrapper:not([customizing]) #urlbar-container {
+    top: var(--zen-element-separation) !important;
+  }
+
+  & #urlbar:not([breakout-extend]) .urlbar-input {
+    color: var(--zen-page-top-fg) !important;
+  }
+}
+
+/* Loading bar: small pill just left of the ⋯ menu, centred in the toolbar */
+:root:not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]) #zen-loading-progress-bar {
+  top: calc(var(--zen-toolbar-height) * -0.35) !important;
+  left: calc(100% - 67px) !important;
+  width: 40px !important;
+  height: 4px !important;
+  --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-page-top-fg, currentColor) 45%, transparent) !important;
+
+  &[long-load="true"] {
+    background: color-mix(in srgb, var(--zen-page-top-fg, currentColor) 15%, transparent) !important;
+  }
+}
+
+/* let the loading bar poke out of the page area into the toolbar */
+:root:not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]) .browserSidebarContainer.deck-selected:has(> #zen-loading-progress-bar) {
+  overflow-clip-margin: 48px !important;
+}
+:root:not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]) #zen-appcontent-navbar-wrapper:not(:has(#urlbar[breakout-extend])) {
+  z-index: auto !important;
+}
+:root:not([zen-single-toolbar="true"]) #zen-loading-progress-bar {
+  z-index: 50 !important;
+}
+
+/* no "Search with Google or enter address" text in the toolbar on empty tabs */
+:root:not([zen-single-toolbar="true"]) #urlbar:not([breakout-extend]) .urlbar-input::placeholder {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+
+/* Compact mode: the startup script moves the traffic lights into the floating sidebar's
+ * top-left (#zen-sidebar-window-buttons, above the essentials). */
+#zen-sidebar-window-buttons {
+  height: 28px;
+  min-height: 28px;
+  align-items: center;
+  padding-inline-start: 6px;
+  margin-bottom: 2px;
+
+  & .titlebar-buttonbox-container {
+    display: flex !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-height: none !important;
+  }
+}
