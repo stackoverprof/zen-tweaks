@@ -374,3 +374,9 @@
 :root:not([zen-compact-mode="true"]):not([zen-single-toolbar="true"]) #nav-bar {
   padding-inline-start: 4px !important;
 }
+
+/* Traffic lights at rest: Zen hides the real ones until hover and draws three placeholder dots in a fixed grey,
+ * which vanish on light pages. Tint the dots from the page, like the other toolbar buttons. */
+:root[zen-page-color] #zen-navbar-window-buttons .titlebar-buttonbox-container {
+  --zen-toolbar-element-bg: color-mix(in srgb, var(--zen-page-top-fg) 22%, transparent) !important;
+}

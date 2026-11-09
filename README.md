@@ -17,6 +17,8 @@ For the **Sidebar and Top Toolbar** layout (Settings > Look and Feel):
 - **Fullscreen:** the domain hides when a page goes fullscreen (for example video).
 - **Compact mode:** the floating sidebar runs the full height of the window, slightly see-through (90%), with the sidebar toggle in its top-left above the essentials.
 - **Empty tabs:** with no page open, the toolbar takes the same grey as Zen's empty page.
+- **Loading:** a search that opens a new tab keeps that grey until the page loads, instead of flashing white.
+- **Traffic lights:** Zen's resting dots take their colour from the page, so they stay visible on light and dark pages.
 
 <img src="images/compact-sidebar.png" width="480" alt="Compact sidebar with the sidebar toggle">
 
