@@ -1,12 +1,6 @@
 /*
- * Zen Tweaks (mod)
- * For the "Sidebar and Top Toolbar" layout on macOS:
- *  - top toolbar at 70% height, address shown as plain centred text (no box, no icons)
- *  - no traffic lights or search box in the toolbar; Cmd+L / typing still opens Zen's search
- *  - toolbar drawn inside the page card, painted with the page's colour (needs the startup script)
- *  - compact mode: the floating sidebar runs the full window height; traffic lights in its
- *    top-left (moved there by the startup script)
- *  - page-load indicator next to the menu button
+ * Half Toolbar: shrinks Zen's top toolbar to 70% of its height (42px -> ~29px on macOS).
+ * Touches only the top toolbar (#nav-bar and its wrapper); the sidebar is untouched.
  */
 
 :root:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper {
@@ -151,6 +145,7 @@
       text-overflow: ellipsis !important;
       white-space: nowrap !important;
       opacity: 0.75;
+      mask-image: none !important;  /* no right-edge fade (Firefox's overflow mask) */
       /* sit on the toolbar's optical centre, level with the buttons */
       height: var(--zen-half-toolbar-h) !important;
       line-height: var(--zen-half-toolbar-h) !important;
@@ -218,10 +213,10 @@
   }
 }
 
-/* Loading bar: small pill just left of the ⋯ menu, centred in the toolbar */
+/* Loading bar: small pill in the middle of the toolbar, standing in for the domain while a page loads */
 :root:not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]) #zen-loading-progress-bar {
   top: calc(var(--zen-toolbar-height) * -0.35) !important;
-  left: calc(100% - 67px) !important;
+  left: 50% !important;
   width: 40px !important;
   height: 4px !important;
   --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-page-top-fg, currentColor) 45%, transparent) !important;
@@ -263,6 +258,50 @@
     padding: 0 !important;
     max-height: none !important;
   }
+
+  /* the sidebar toggle, at the top-left, grey like the idle traffic lights */
+  & #zen-sidebar-top-buttons {
+    margin: 0 !important;
+    justify-content: flex-start !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    background: none !important;
+    border: none !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    height: 24px !important;
+
+    & #zen-sidebar-top-buttons-customization-target {
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-height: 0 !important;
+      height: 24px !important;
+      padding: 0 !important;
+      justify-content: flex-start !important;
+    }
+
+    & #zen-sidebar-top-buttons-separator {
+      display: none !important;
+    }
+
+    & .toolbarbutton-1 {
+      --toolbarbutton-icon-fill: light-dark(rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0.25)) !important;
+      fill: light-dark(rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0.25)) !important;
+      color: light-dark(rgba(0, 0, 0, 0.25), rgba(255, 255, 255, 0.25)) !important;
+      padding: 0 !important;
+
+      & > .toolbarbutton-icon {
+        padding: 4px !important;
+        width: 24px !important;
+        height: 24px !important;
+      }
+
+      &:hover {
+        --toolbarbutton-icon-fill: light-dark(rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.6)) !important;
+        fill: light-dark(rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.6)) !important;
+      }
+    }
+  }
 }
 
 /* Compact mode: the floating sidebar's background at 90% opacity (no blur) */
@@ -276,11 +315,6 @@
   }
 }
 
-/* while the sidebar is out, hide the toolbar buttons under its top corner so they don't show through */
-:root[zen-compact-mode="true"]:not([zen-single-toolbar="true"]):has(#navigator-toolbox:is([zen-has-hover], [zen-user-show], [flash-popup], [has-popup-menu], [zen-compact-mode-active], [movingtab])) #nav-bar :is(#zen-sidebar-top-buttons, #back-button, #forward-button, #stop-reload-button) {
-  visibility: hidden !important;
-}
-
 /* Empty tab (fresh window / new tab): no page colour to take, so let the window's own grey show */
 :root[zen-has-empty-tab="true"] {
   --zen-page-top-color: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1)) !important;  /* same wash Zen puts on the empty page */
@@ -289,4 +323,54 @@
   & #zen-appcontent-navbar-wrapper {
     box-shadow: none !important;
   }
+}
+
+/* fullscreen video (and other page fullscreen): the pinned domain goes too */
+:root[inDOMFullscreen="true"] #urlbar-container {
+  display: none !important;
+}
+
+/* Compact mode: traffic lights at the toolbar's left (the startup script moves them into
+ * #zen-navbar-window-buttons while the sidebar is hidden), the nav buttons pushed right */
+:root[zen-compact-mode="true"]:not([zen-single-toolbar="true"]) #nav-bar {
+  padding-inline-end: 0 !important;  /* ⋯ as far from the card's right edge as the buttons are from its top */
+  & #zen-navbar-window-buttons {
+    align-items: center;
+    padding-inline: 2px 0;  /* same gap to the card's left edge as to its top */
+
+    & .titlebar-buttonbox-container {
+      display: flex !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      max-height: none !important;
+    }
+  }
+
+  & #nav-bar-customization-target {
+    justify-content: flex-end !important;
+    flex: 1 1 auto !important;
+  }
+
+  & toolbarspring,
+  & .customizableui-special-spring {
+    display: none !important;
+  }
+}
+
+/* while the current tab loads, the loading bar takes the domain's place */
+:root:not([zen-single-toolbar="true"]) #urlbar:not([breakout-extend]) .urlbar-input {
+  transition: opacity 0.2s ease;
+}
+:root:not([zen-single-toolbar="true"]):has(.browserSidebarContainer.deck-selected > #zen-loading-progress-bar) #urlbar:not([breakout-extend]) .urlbar-input {
+  opacity: 0 !important;
+}
+
+/* the right-hand buttons: same gap to the card's right edge as to its top */
+:root:not([zen-single-toolbar="true"]) #nav-bar #PanelUI-menu-button {
+  margin-inline-end: -9px !important;  /* the ⋯ glyph has empty space above and below, so it sits a little further in */
+}
+
+/* sidebar always shown (no traffic lights in the toolbar): give the ← the same gap to the card's left edge as to its top */
+:root:not([zen-compact-mode="true"]):not([zen-single-toolbar="true"]) #nav-bar {
+  padding-inline-start: 4px !important;
 }
